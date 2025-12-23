@@ -29,7 +29,9 @@ class _AnnouncementallScreenState extends State<AnnouncementallScreen> {
     });
   }
 
-  void apiCalling() {
+  void apiCalling() async{
+    await DatabaseHelper.printSyncStatus();
+
     print('🔄 Loading announcements...');
     context.read<AnnouncementBloc>().add(GetAnnouncementRequestedEvent("all"));
   }
@@ -126,8 +128,11 @@ class _AnnouncementallScreenState extends State<AnnouncementallScreen> {
     }
   }
 
+  final  localDB = DatabaseHelper.getDirtyCount();
+
   @override
   Widget build(BuildContext context) {
+    print("Local Data Base :${localDB.runtimeType}");
     return Scaffold(
       appBar: AppBar(
         title: Text("DashBoard"),
@@ -297,27 +302,36 @@ class _AnnouncementallScreenState extends State<AnnouncementallScreen> {
             );
           }
 
-          return ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-            itemCount: announcementList.reversed.length,
-            separatorBuilder: (context, index) => Divider(
-              color: Colors.grey.withOpacity(0.3),
-              thickness: 1,
-              height: 20.h,
-              indent: 16.w,
-              endIndent: 16.w,
-            ),
-            physics: BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              final announcementData = announcementList[index];
-              return Container(
-                margin: EdgeInsets.only(bottom: 12.h),
-                child: AnnouncementCardWidget(
-                  isShowComment: true,
-                  announcementViewData: announcementData,
+          return Column(
+            children: [
+              Text("Total Count of List :${announcementList.length}"),
+              12.verticalSpace,
+
+              Expanded(
+                child: ListView.separated(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  itemCount: announcementList.reversed.length,
+                  separatorBuilder: (context, index) => Divider(
+                    color: Colors.grey.withOpacity(0.3),
+                    thickness: 1,
+                    height: 20.h,
+                    indent: 16.w,
+                    endIndent: 16.w,
+                  ),
+                  physics: BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final announcementData = announcementList[index];
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 12.h),
+                      child: AnnouncementCardWidget(
+                        isShowComment: true,
+                        announcementViewData: announcementData,
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ],
           );
         }
 

@@ -57,4 +57,26 @@ class DatabaseHelper {
 
 
 
+  static Future<void> printSyncStatus() async {
+    final db = await database;
+
+    // Dirty count
+    final dirty = Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM announcements WHERE is_dirty = 1')
+    ) ?? 0;
+
+    // Pending sync
+    final pending = Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM announcements WHERE sync_status = "pending"')
+    ) ?? 0;
+
+    // Total records
+    final total = Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM announcements')
+    ) ?? 0;
+
+    print('📊 DB Status: Dirty=$dirty | Pending=$pending | Total=$total');
+  }
+
+
 }
